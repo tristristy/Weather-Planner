@@ -1,12 +1,6 @@
-const options = {
-	method: 'GET',
-	headers: {
-		'X-RapidAPI-Key': 'b480d29e23msh0abb34b9a11b6c1p1c16e4jsn4c7767506acd',
-		'X-RapidAPI-Host': 'community-open-weather-map.p.rapidapi.com'
-	}
-};
-
 var city = $("#cityName").val();
+
+var key = "&appid=a14c054b595eba0e2721db026cf78927"
 
 $("#cityName").keypress(function (event) {
     if (event.keyCode === 13) {
@@ -15,25 +9,42 @@ $("#cityName").keypress(function (event) {
     }
 });
 
-$("#searchButton").on("click", function () {
-    $("#forcastTitle").removeClass("invisible")
+$("#searchBtn").on("click", function() {
+
+    $('#forecastTitle').addClass('show');
 
     city = $("#cityName").val();
 
+    //clears input value
     $("#cityName").val("");
 
-    fetch('https://community-open-weather-map.p.rapidapi.com/weather?q=' + city + '&units=imperial', options)
-        .then(response => response.json())
-        .then(response => console.log(response))
-        .catch(err => console.error(err));
+    const callUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + key;
+
+    $.ajax({
+        url: callUrl,
+        method: "GET"
+      })
+      .then(function (response){
     
+        console.log(response)
+    
+        console.log(response.name)
+        console.log(response.weather[0].icon)
+    
+        var tempF = (response.main.temp - 273.15) * 1.80 + 32;
+        console.log(Math.floor(tempF))
+    
+        console.log(response.main.humidity)
+    
+        console.log(response.wind.speed)
         
         getConditions(response);
-        getForcast();
+        getForecast();
         makeList();
-});
+        })
+      });
 
-function makeList(){
-    var listItem = $("<li>").text(city);
-    $("#recentSearches").appendChild(listItem);
-};
+function makeList() {
+    var listItem = $("<li>").addClass("list-group-item").text(city);
+    $(".list").append(listItem);
+  }
